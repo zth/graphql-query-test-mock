@@ -1,0 +1,64 @@
+{
+  "name": "graphql-query-test-mock",
+  "version": "0.9.0",
+  "author": "Gabriel Nordeborn",
+  "license": "MIT",
+  "main": "lib/index.js",
+  "repository": "https://github.com/zth/graphql-query-test-mock",
+  "description": "Mock queries to your GraphQL backend in your Jest tests.",
+  "keywords": [
+    "graphql",
+    "testing",
+    "mock",
+    "jest",
+    "react",
+    "relay",
+    "relaymodern",
+    "apollo",
+    "apollocodegen",
+    "mockquery",
+    "querymock"
+  ],
+  "scripts": {
+    "test": "jest",
+    "test:watch": "yarn test --watch",
+    "prepublish": "yarn flow && yarn test && yarn build",
+    "flow": "flow check",
+    "build": "rm -rf lib && babel src --copy-files --out-dir lib && flow-copy-source src lib"
+  },
+  "files": [
+    "package.json",
+    "README.md",
+    "LICENSE",
+    "lib",
+    "yarn.lock"
+  ],
+  "devDependencies": {
+    "@babel/cli": "^7.0.0-rc.1",
+    "@babel/core": "^7.0.0-rc.1",
+    "@babel/plugin-proposal-class-properties": "^7.0.0-rc.1",
+    "@babel/plugin-proposal-object-rest-spread": "^7.0.0-rc.1",
+    "@babel/preset-env": "^7.0.0-rc.1",
+    "@babel/preset-flow": "^7.0.0-rc.1",
+    "babel-core": "^7.0.0-0",
+    "babel-jest": "^23.4.2",
+    "flow-bin": "^0.79.1",
+    "flow-copy-source": "^2.0.2",
+    "flow-typed": "^2.5.1",
+    "jest": "^23.5.0",
+    "nock": "^9.6.1",
+    "node-fetch": "^2.2.0"
+  },
+  "dependencies": {
+    "deep-equal": "^1.0.1"
+  },
+  "peerDependencies": {
+    "nock": "^9.6.1"
+  },
+  "jest": {
+    "setupTestFrameworkScriptFile": "./setup/jest.setupFramework.js",
+    "setupFiles": [
+      "./setup/jest.setup.js"
+    ]
+  }
+}
