@@ -35,7 +35,7 @@ export function handleNockRequest(queryMock: QueryMock): NockHandleFn {
 
           if (status && status >= 400) {
             // Bail early if status is a failure
-            throw new Error(`Request failed with status ${status}`);
+            throw queryMockConfig.error || new Error(`Request failed with status ${status}`);
           }
 
           const hasVariablesOrMatchFn = !!(
