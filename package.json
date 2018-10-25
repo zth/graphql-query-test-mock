@@ -4,6 +4,7 @@
   "author": "Gabriel Nordeborn",
   "license": "MIT",
   "main": "lib/index.js",
+  "types": "lib/index.d.ts",
   "repository": "https://github.com/zth/graphql-query-test-mock",
   "description": "Mock queries to your GraphQL backend in your Jest tests.",
   "keywords": [
@@ -47,7 +48,8 @@
     "flow-typed": "^2.5.1",
     "jest": "^23.5.0",
     "nock": "^9.6.1",
-    "node-fetch": "^2.2.0"
+    "node-fetch": "^2.2.0",
+    "typescript": "3.1.3"
   },
   "dependencies": {
     "deep-equal": "^1.0.1",
