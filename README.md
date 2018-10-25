@@ -19,6 +19,13 @@ A few things this library helps with:
 yarn add graphql-query-test-mock nock --dev
 ```
 
+You'll also need to have a `fetch` implementation available in your environment (`jest` does not come with one by default). You could for example use `node-fetch` and put something like 
+this in your test setup file:
+
+```
+global.fetch = require('node-fetch');
+``` 
+
 ## Usage
 
 Below is a detailed instruction on how to use the query mock. There's also an example [repo located here](https://github.com/zth/relay-modern-flow-jest-enzyme-example) which you can clone and check out for yourself.
