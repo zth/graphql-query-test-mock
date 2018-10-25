@@ -1,11 +1,7 @@
 // @flow strict
 import nock from 'nock';
 import url from 'url';
-import {
-  DEFAULT_CONFIG,
-  defaultChangeServerResponseFn,
-  defaultExtractOperationIdFn
-} from './defaults';
+import { DEFAULT_CONFIG, defaultChangeServerResponseFn } from './defaults';
 import { handleNockRequest } from './handleNockRequest';
 import type { Data, ServerResponse, Variables } from './types';
 
@@ -38,22 +34,18 @@ type QueryStoreObj = {
   [queryName: string]: Array<MockGraphQLRecord>
 };
 
-export type ExtractOperationIdFn = <T: Object>(data: T) => string;
-
 export type ChangeServerResponseFn = (
   mockQueryConfig: MockGraphQLConfig,
   serverResponse: ServerResponse
 ) => ServerResponse;
 
 type CreateQueryMockConfig = {|
-  extractOperationId?: ExtractOperationIdFn,
   changeServerResponse?: ChangeServerResponseFn
 |};
 
 export class QueryMock {
   _calls: Array<RecordedGraphQLQuery> = [];
   _queries: QueryStoreObj = {};
-  _extractOperationIdFn: ExtractOperationIdFn = defaultExtractOperationIdFn;
   _changeServerResponseFn: ChangeServerResponseFn = defaultChangeServerResponseFn;
 
   constructor(config: ?CreateQueryMockConfig) {
@@ -61,11 +53,7 @@ export class QueryMock {
       return;
     }
 
-    const { extractOperationId, changeServerResponse } = config;
-
-    if (extractOperationId) {
-      this._extractOperationIdFn = extractOperationId;
-    }
+    const { changeServerResponse } = config;
 
     if (changeServerResponse) {
       this._changeServerResponseFn = changeServerResponse;
