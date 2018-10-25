@@ -1,7 +1,0 @@
-// @flow strict
-export type Variables = { [key: string]: mixed };
-export type Data = { [key: string]: mixed };
-
-export type ServerResponse = {
-  data: Data
-};
