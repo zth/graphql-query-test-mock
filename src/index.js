@@ -12,7 +12,7 @@ import type { Data, ServerResponse, Variables } from './types';
 export type MockGraphQLConfig = {|
   name: string,
   data: Data,
-  error: Data,
+  error?: Data,
   variables?: Variables,
   matchOnVariables?: boolean,
   matchVariables?: (variables: Variables) => boolean | Promise<boolean>,

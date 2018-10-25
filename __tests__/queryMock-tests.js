@@ -268,4 +268,55 @@ describe('queryMock', () => {
       });
     });
   });
+
+  describe('Custom errors', () => {
+    it('should return default error when status is 400 or above', async () => {
+      const testData = {
+        test: 'data'
+      };
+
+      queryMock.mockQuery({
+        name: 'ErrorTestQuery',
+        data: testData,
+        status: 400
+      });
+
+      try {
+        await fetchQuery({
+          name: 'ErrorTestQuery',
+          text: ''
+        });
+      } catch (e) {
+        expect(e).toBeDefined();
+        expect(e.toString()).toBe('Error: Request failed with status 400');
+      }
+    });
+
+    it('should return default error when status is 400 or above and error is defined', async () => {
+      const testData = {
+        test: 'data'
+      };
+
+      const errorData = {
+        error: 'data'
+      };
+
+      queryMock.mockQuery({
+        name: 'ErrorTestQuery',
+        data: testData,
+        error: errorData,
+        status: 400
+      });
+
+      try {
+        await fetchQuery({
+          name: 'ErrorTestQuery',
+          text: ''
+        });
+      } catch (e) {
+        expect(e).toBeDefined();
+        expect(e).toBe(errorData);
+      }
+    });
+  });
 });
