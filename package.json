@@ -50,7 +50,8 @@
     "node-fetch": "^2.2.0"
   },
   "dependencies": {
-    "deep-equal": "^1.0.1"
+    "deep-equal": "^1.0.1",
+    "graphql": "^14.0.2"
   },
   "peerDependencies": {
     "nock": "^9.6.1"

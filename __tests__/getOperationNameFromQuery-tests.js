@@ -1,0 +1,20 @@
+// @flow
+import { getOperationNameFromQuery } from '../src/getOperationNameFromQuery';
+
+describe('getOperationNameFromQuery', () => {
+  it('should extract operation name from query', () => {
+    expect(getOperationNameFromQuery(`query SomeQuery { viewer { id } }`)).toBe(
+      'SomeQuery'
+    );
+  });
+
+  it('should throw if it cannot extract name from operation', () => {
+    expect.assertions(1);
+
+    try {
+      getOperationNameFromQuery(`{ id }`);
+    } catch (e) {
+      expect(e).toBeTruthy();
+    }
+  });
+});

@@ -15,8 +15,7 @@ describe('queryMock', () => {
       });
 
       const res = await fetchQuery({
-        name: 'TestQuery',
-        text: ''
+        text: 'query TestQuery { id }'
       });
 
       expect(res.data).toEqual(testData);
@@ -29,7 +28,7 @@ describe('queryMock', () => {
       try {
         await fetchQuery({
           name: 'NoMockForThisOne',
-          text: ''
+          text: 'query NoMockForThisOne { id }'
         });
       } catch (e) {
         expect(e.message).toBe(
@@ -62,13 +61,11 @@ describe('queryMock', () => {
       });
 
       const firstRes = await fetchQuery({
-        name: 'TestQuery',
-        text: ''
+        text: 'query TestQuery { id }'
       });
 
       const secondRes = await fetchQuery({
-        name: 'TestQuery',
-        text: ''
+        text: 'query TestQuery { id }'
       });
 
       expect(firstRes.data).toEqual(firstTestData);
@@ -89,8 +86,7 @@ describe('queryMock', () => {
         });
 
         const res = await fetchQuery({
-          name: 'TestQuery',
-          text: ''
+          text: 'query TestQuery { id }'
         });
 
         expect(res.data).toEqual(testData);
@@ -137,8 +133,7 @@ describe('queryMock', () => {
 
         const res = await fetchQuery(
           {
-            name: 'TestQuery',
-            text: ''
+            text: 'query TestQuery { id }'
           },
           mockVariables
         );
@@ -157,8 +152,7 @@ describe('queryMock', () => {
 
         try {
           await fetchQuery({
-            name: 'TestQuery',
-            text: ''
+            text: 'query TestQuery { id }'
           });
         } catch (e) {
           expect(e.message).toBe(
@@ -176,8 +170,7 @@ describe('queryMock', () => {
         });
 
         const res = await fetchQuery({
-          name: 'TestQuery',
-          text: ''
+          text: 'query TestQuery { id }'
         });
 
         expect(res.data).toEqual(mockData);
@@ -194,8 +187,7 @@ describe('queryMock', () => {
 
         const res = await fetchQuery(
           {
-            name: 'TestQuery',
-            text: ''
+            text: 'query TestQuery { id }'
           },
           mockVariables
         );
@@ -220,8 +212,7 @@ describe('queryMock', () => {
       let controlVariable = false;
 
       const returnPromise = fetchQuery({
-        name: 'ControlledQuery',
-        text: ''
+        text: 'query ControlledQuery { id }'
       }).then(res => {
         controlVariable = true;
         return res;
@@ -256,8 +247,7 @@ describe('queryMock', () => {
       });
 
       const res = await fetchQuery({
-        name: 'AlteredQuery',
-        text: ''
+        text: 'query AlteredQuery { id }'
       });
 
       expect(res).toEqual({
@@ -283,8 +273,7 @@ describe('queryMock', () => {
 
       try {
         await fetchQuery({
-          name: 'ErrorTestQuery',
-          text: ''
+          text: 'query ErrorTestQuery { id }'
         });
       } catch (e) {
         expect(e).toBeDefined();
@@ -310,8 +299,7 @@ describe('queryMock', () => {
 
       try {
         await fetchQuery({
-          name: 'ErrorTestQuery',
-          text: ''
+          text: 'query ErrorTestQuery { id }'
         });
       } catch (e) {
         expect(e).toBeDefined();

@@ -1,6 +1,5 @@
 // @flow
 type Operation = {
-  name: string,
   text: string
 };
 
@@ -8,7 +7,6 @@ export const GRAPHQL_API_URL = 'http://localhost/graphql';
 
 export type FetchQueryConfig = {
   query: string,
-  name: string,
   variables?: { [key: string]: mixed }
 };
 
@@ -18,7 +16,6 @@ export function fetchQuery(
 ): Promise<*> {
   const config: FetchQueryConfig = {
     query: operation.text,
-    name: operation.name,
     variables
   };
 

@@ -1,5 +1,6 @@
 // @flow strict
 import deepEqual from 'deep-equal';
+import { getOperationNameFromQuery } from './getOperationNameFromQuery';
 import { QueryMock } from './index';
 import type { ChangeServerResponseFn } from './index';
 import type { ServerResponse } from './types';
@@ -19,7 +20,10 @@ export function handleNockRequest(queryMock: QueryMock): NockHandleFn {
     let preventThrowing = false;
 
     if (data && typeof data === 'object') {
-      const id = queryMock._extractOperationIdFn(data);
+      const id =
+        typeof data.query === 'string'
+          ? getOperationNameFromQuery(data.query)
+          : null;
 
       if (id) {
         const variables =
@@ -35,7 +39,8 @@ export function handleNockRequest(queryMock: QueryMock): NockHandleFn {
 
           if (status && status >= 400) {
             // Bail early if status is a failure
-            throw queryMockConfig.error || new Error(`Request failed with status ${status}`);
+            throw queryMockConfig.error ||
+              new Error(`Request failed with status ${status}`);
           }
 
           const hasVariablesOrMatchFn = !!(
