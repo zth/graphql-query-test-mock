@@ -9,6 +9,7 @@ declare module 'graphql-query-test-mock' {
   export type MockGraphQLConfig = {
     name: string,
     data: Data,
+    error?: Data,
     variables?: Variables,
     matchOnVariables?: boolean,
     matchVariables?: (variables: Variables) => boolean | Promise<boolean>,
@@ -34,15 +35,12 @@ declare module 'graphql-query-test-mock' {
     [queryName: string]: Array<MockGraphQLRecord>
   };
 
-  export type ExtractOperationIdFn = <T>(data: T) => string;
-
   export type ChangeServerResponseFn = (
     mockQueryConfig: MockGraphQLConfig,
     serverResponse: ServerResponse
   ) => ServerResponse;
 
   type CreateQueryMockConfig = {
-    extractOperationId?: ExtractOperationIdFn,
     changeServerResponse?: ChangeServerResponseFn
   };
 
