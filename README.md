@@ -254,6 +254,7 @@ My personal trick is to add a `console.log` inside of your `fetch` for your fram
 .then(res => {
     if (__DEV__) {
       console.log({
+        name: operation.name, // operation is the first parameter passed to your fetch-function in Relay Modern
         variables,
         data: res
       });
