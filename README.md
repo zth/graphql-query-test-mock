@@ -46,7 +46,7 @@ export const queryMock = new QueryMock();
 
 You will use this exported queryMock in your tests.
 
-#### Make sure the query mock is initialized and reset between each set
+#### Make sure the query mock is initialized and reset between each test
 
 In order for old mocks to not stick around between tests, we'll need to set up and tear down our mock between each test. We'll use Jests `setupFiles` and `setupTestFramework` files to accomplish that.
 `setupFiles` will run _once before every test suite_, allowing us to initialize our `QueryMock`. `setupTestFramework` runs once before _each test_, allowing us to reset all query mocks before each test.
@@ -106,4 +106,158 @@ describe('Some test Relay Modern test', () => {
 });
 ```
 
-# More exhaustive docs will come soon!
+## API Reference
+### QueryMock
+Create a new `queryMock` by doing: `new QueryMock()`. You then use `queryMock` to handle your mocks.
+
+#### `queryMock.setup(graphQLURL: string)`
+Sets up mocking on the specified GraphQL API URL. Make sure you run this before your test suite.
+
+#### `queryMock.reset()`
+Resets the `queryMock`, meaning all mocks are removed, and the call history is erased.
+Run this before/after each test to make sure you always start fresh.
+
+#### `queryMock.mockQuery(config)`
+Mocks a query. `config` looks like this:
+
+```javascript
+type MockGraphQLConfig = {|
+  /**
+   * The name of the query to mock.
+   * Example: `query QueryNameIsHere { ... }`.
+   */
+  name: string,
+
+  /**
+   * The data to return for this particular query.
+   */
+  data: Data,
+
+  /**
+   * If you want, you can return a custom error here that'll be thrown by the API if
+   * you return a status like 401. Read more below.
+   */
+  error?: Data,
+
+  /**
+   * The status to return from the API. Defaults to 200, but can be changed to 401
+   * or similar if you want to test more complex interactions with the API.
+   */
+  status?: number,
+
+  /**
+   * This tells QueryMock whether you want the query you mock to only be valid for the
+   * exact variables you pass `mockQuery` when mocking. Matching on the variables is
+   * a convenient way to test that the correct variables are used by your app.
+   * Default: true.
+   */
+  matchOnVariables?: boolean,
+
+  /**
+   * This is a convenience method you can use if you want to match on variables in a
+   * more dynamic way, for example when using relative dates in your queries.
+   *
+   * Takes precedence over matchOnVariables above if specified.
+   */
+  matchVariables?: (variables: Variables) => boolean | Promise<boolean>,
+
+  /**
+   * The variables to match this specific query mock to.
+   * Example: variables: { id: 123 } would only match when exactly { id: 123 } is sent
+   * as variables for this query.
+   */
+  variables?: Variables,
+
+  /**
+   * Whether to persist this mock or not, meaning whether it should be valid for several
+   * calls in a row, or delete itself after being used once. Set this to false when you
+   * need to test a more complex flow of calls using the same query, but needing different
+   * responses.
+   *
+   * Default: true
+   */
+  persist?: boolean,
+
+  /**
+   * A custom handler that lets you return a custom `nock` response for this mock.
+   * `req` is the `nock` request, and it expects you to return [statusCode, serverResponse], like:
+   * [200, { data: { id: '123 } }].
+   */
+  customHandler?: (req: *) => [number, mixed],
+
+  /**
+   * Sometimes you need to change the server response object dynamically for a query mock.
+   * This allows you to do so. Example:
+   * changeServerResponse: (config, response) => ({ ...response, invalidToken: true })
+   */
+  changeServerResponse?: ChangeServerResponseFn
+|};
+```
+
+#### `queryMock.mockQueryWithControlledResolution`
+The same as `mockQuery` above, but returns a function that lets you manually control when you 
+want the mock server to resolve the response. Useful when testing loading states and similar things.
+
+Example:
+
+```javascript
+const resolveResponse = queryMock.mockQueryWithControlledResolution(...config...);
+expect(getElementByText('Loading....')).toBeTruthy();
+resolveResponse(); // The data is now returned and your view should be re-rendered with the correct data.
+expect(getElementByText('Some text from the API.')).toBeTruthy();
+```
+
+#### `queryMock.getCalls()`
+Returns `Array<RecordedGraphQLQuery>` where `RecordedGraphQLQuery` looks like this:
+
+```javascript
+type RecordedGraphQLQuery = {|
+  /**
+   * The id of the query. Same as the query name, ex: `query QueryName { ... }`.
+   */
+  id: string,
+
+  /**
+   * Variables used in this specific call.
+   */
+  variables: ?Variables,
+
+  /**
+   * Headers used for this specific call.
+   */
+  headers: { [key: string]: string },
+
+  /**
+   * Full response object returned by the server for this specific call.
+   */
+  response: ServerResponse
+|};
+```
+
+Useful for various things, for instance checking whether the correct headers are sent:
+```javascript
+const lastCall = queryMock.getCalls().pop();
+expect(lastCall.headers['Authorization']).toBe('Bearer mock-token');
+```
+
+
+## FAQ
+##### Why use `nock`, why not just mock `fetch`?
+The goal of this library is to get as close as possible to how your queries would 
+be run in production. Mocking using `nock` ensures that we test that an *actual* request 
+is sent to the *correct URL*.
+
+##### Creating "real" mock data is very cumbersome! Anything I can do to speed it up?
+My personal trick is to add a `console.log` inside of your `fetch` for your framework, like this:
+```javascript
+...
+.then(res => {
+    if (__DEV__) {
+      console.log({
+        variables,
+        data: res
+      });
+    }
+```
+
+This makes it easy to copy the `variables` and `data` from the actual server response.
