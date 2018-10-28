@@ -31,7 +31,7 @@ export function handleNockRequest(queryMock: QueryMock): NockHandleFn {
             ? data.variables
             : {};
 
-        const mockedQueryValue = queryMock.getQueryMock(id);
+        const mockedQueryValue = queryMock._getQueryMock(id);
 
         if (mockedQueryValue) {
           const { queryMockConfig, resolveQueryPromise } = mockedQueryValue;
@@ -72,7 +72,7 @@ export function handleNockRequest(queryMock: QueryMock): NockHandleFn {
               ? queryMockConfig.customHandler(this.req)
               : [queryMockConfig.status || 200, serverResponse];
 
-            queryMock.addCall({
+            queryMock._addCall({
               id,
               variables,
               headers: this.req.headers,

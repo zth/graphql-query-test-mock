@@ -1,4 +1,4 @@
-// @flow
+// @flow strict
 import { parse } from 'graphql/language/parser';
 
 export function getOperationNameFromQuery(query: string): string {
