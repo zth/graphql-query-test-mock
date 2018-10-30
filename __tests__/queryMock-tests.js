@@ -172,6 +172,29 @@ describe('queryMock', () => {
 
         expect(res.data).toEqual(mockData);
       });
+
+      test('empty object in mock should let sending no variables or empty object pass', async () => {
+        queryMock.mockQuery({
+          name: 'TestQuery',
+          variables: {},
+          data: mockData
+        });
+
+        expect(
+          (await fetchQuery({
+            text: 'query TestQuery { id }'
+          })).data
+        ).toEqual(mockData);
+
+        expect(
+          (await fetchQuery(
+            {
+              text: 'query TestQuery { id }'
+            },
+            {}
+          )).data
+        ).toEqual(mockData);
+      });
     });
 
     describe('By function', () => {
