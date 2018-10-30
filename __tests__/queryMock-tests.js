@@ -274,7 +274,9 @@ describe('queryMock', () => {
         });
       } catch (e) {
         expect(e).toBeDefined();
-        expect(e.toString()).toBe('Error: Request failed with status 400');
+        expect(e.toString()).toBe(
+          'Error: Request for operation "ErrorTestQuery" failed with status 400. This is intentional and set up in the mock.'
+        );
       }
     });
 
