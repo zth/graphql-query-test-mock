@@ -1,6 +1,7 @@
 // @flow
 import { fetchQuery } from '../__testUtils__/fetchQuery';
 import { queryMock } from '../__testUtils__/queryMock';
+import printDiff from 'jest-diff';
 
 describe('queryMock', () => {
   describe('Basic queries', () => {
@@ -31,9 +32,7 @@ describe('queryMock', () => {
           text: 'query NoMockForThisOne { id }'
         });
       } catch (e) {
-        expect(e.message).toBe(
-          'No suitable mock found. Please make sure you have mocked the query you are making.'
-        );
+        expect(e).toBeDefined();
       }
     });
   });
@@ -155,9 +154,7 @@ describe('queryMock', () => {
             text: 'query TestQuery { id }'
           });
         } catch (e) {
-          expect(e.message).toBe(
-            'No suitable mock found. Please make sure you have mocked the query you are making.'
-          );
+          expect(e).toBeDefined();
         }
       });
 
@@ -304,6 +301,96 @@ describe('queryMock', () => {
       } catch (e) {
         expect(e).toBeDefined();
         expect(e).toBe(errorData);
+      }
+    });
+  });
+
+  describe('Error messages', () => {
+    it('should print what query we tried + what queries are mocked when the requested query has no mock setup', async () => {
+      expect.assertions(1);
+
+      queryMock.mockQuery({
+        name: 'SomeOtherQuery',
+        data: {}
+      });
+
+      try {
+        await fetchQuery({
+          text: 'query NoMockForThisOne { id }'
+        });
+      } catch (e) {
+        expect(e.message).toBe(
+          'No suitable mock for operation "NoMockForThisOne" found. Please make sure you have mocked the query you are making.\n\nCurrently mocked queries: "SomeOtherQuery"'
+        );
+      }
+    });
+
+    it('should print a diff of variables from request + in the mock when mock is to be matched on variables, but the variables do not actually match', async () => {
+      expect.assertions(1);
+
+      queryMock.mockQuery({
+        name: 'SomeQuery',
+        data: {},
+        variables: {
+          some: 'prop',
+          name: true
+        }
+      });
+
+      try {
+        await fetchQuery(
+          {
+            text: 'query SomeQuery { id }'
+          },
+          {
+            some: 'prop',
+            name: false
+          }
+        );
+      } catch (e) {
+        expect(e.message).toBe(
+          'Variables do not match for operation "SomeQuery".\n\nVariables in request VS mocked variables: \n' +
+            printDiff(
+              {
+                some: 'prop',
+                name: false
+              },
+              {
+                some: 'prop',
+                name: true
+              }
+            )
+        );
+      }
+    });
+
+    it('should notify that a custom matching function is used when variables do not match due to that', async () => {
+      expect.assertions(1);
+
+      queryMock.mockQuery({
+        name: 'SomeQuery',
+        data: {},
+        variables: {
+          some: 'prop',
+          name: true
+        },
+        matchVariables: () => false
+      });
+
+      try {
+        await fetchQuery(
+          {
+            text: 'query SomeQuery { id }'
+          },
+          {
+            some: 'prop',
+            name: true
+          }
+        );
+      } catch (e) {
+        expect(e.message).toBe(
+          'Variables do not match for operation "SomeQuery" due to custom "matchOnVariables" function'
+        );
       }
     });
   });

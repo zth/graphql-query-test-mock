@@ -4,6 +4,7 @@ import { getOperationNameFromQuery } from './getOperationNameFromQuery';
 import { QueryMock } from './index';
 import type { ChangeServerResponseFn } from './index';
 import type { ServerResponse } from './types';
+import printDiff from 'jest-diff';
 
 type NockHandleFn = (
   uri: string,
@@ -18,9 +19,10 @@ export function handleNockRequest(queryMock: QueryMock): NockHandleFn {
     cb: (null, [number, mixed]) => void
   ) {
     let preventThrowing = false;
+    let id: ?string = null;
 
     if (data && typeof data === 'object') {
-      const id =
+      id =
         typeof data.query === 'string'
           ? getOperationNameFromQuery(data.query)
           : null;
@@ -91,14 +93,40 @@ export function handleNockRequest(queryMock: QueryMock): NockHandleFn {
               cb(null, returnVal);
               return returnVal;
             }
+          } else {
+            // More useful errors
+            if (shouldMatchOnVariables) {
+              let errorStr = `Variables do not match for operation "${id ||
+                'unknown'}"`;
+
+              if (queryMockConfig.matchVariables) {
+                throw new Error(
+                  `${errorStr} due to custom "matchOnVariables" function`
+                );
+              } else {
+                throw new Error(
+                  `${errorStr}.\n\nVariables in request VS mocked variables: \n${printDiff(
+                    variables,
+                    queryMockConfig.variables
+                  )}`
+                );
+              }
+            }
           }
         }
       }
     }
 
     if (!preventThrowing) {
+      const mockedQueries = Object.keys(queryMock._queries);
       throw new Error(
-        'No suitable mock found. Please make sure you have mocked the query you are making.'
+        `No suitable mock for operation "${id ||
+          'unknown'}" found. Please make sure you have mocked the query you are making.${
+          mockedQueries.length > 0
+            ? '\n\nCurrently mocked queries: ' +
+              mockedQueries.map(queryName => `"${queryName}"`).join(', ')
+            : ''
+        }`
       );
     }
   };
