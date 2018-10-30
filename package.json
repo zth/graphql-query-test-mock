@@ -23,7 +23,7 @@
   "scripts": {
     "test": "jest",
     "test:watch": "yarn test --watch",
-    "prepublish": "yarn flow && yarn test && yarn build",
+    "prepublish": "yarn build && yarn flow && yarn test",
     "flow": "flow check",
     "build": "rm -rf lib && babel src --copy-files --out-dir lib && flow-copy-source src lib"
   },
