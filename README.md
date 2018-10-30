@@ -48,8 +48,8 @@ You will use this exported queryMock in your tests.
 
 #### Make sure the query mock is initialized and reset between each test
 
-In order for old mocks to not stick around between tests, we'll need to set up and tear down our mock between each test. We'll use Jests `setupFiles` and `setupTestFramework` files to accomplish that.
-`setupFiles` will run _once before every test suite_, allowing us to initialize our `QueryMock`. `setupTestFramework` runs once before _each test_, allowing us to reset all query mocks before each test.
+In order for old mocks to not stick around between tests, we'll need to set up and tear down our mock between each test. We'll use Jests `setupTestFramework` file to accomplish that.
+`setupTestFramework` allow us to run stuff before _each test_, allowing us to reset all query mocks and set up the new, fresh mock.
 Please follow [Jests instructions on adding those files to your project](https://jestjs.io/docs/en/configuration.html), then continue here.
 
 ```javascript
@@ -58,16 +58,8 @@ import { queryMock } from '../path/to/your/queryMock';
 
 // This is run before each test, making sure we always reset our mock
 beforeEach(() => {
-  queryMock.reset();
+  queryMock.setup(GRAPHQL_API_URL); // Variable containing the URL for your GraphQL API. This must match what you're making requests to in your client code.
 });
-```
-
-```javascript
-// in the setupFiles file
-import { queryMock } from '../path/to/your/queryMock';
-
-// This is run before each test suite, setting up the mock base with your GraphQL API URL.
-queryMock.setup(GRAPHQL_API_URL); // Variable containing the URL for your GraphQL API. This must match what you're making requests to in your client code.
 ```
 
 Now we're all set up and ready to mock queries!
