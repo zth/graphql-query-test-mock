@@ -1,5 +1,5 @@
-// flow-typed signature: 84ceb4b2ef91e1c229ab9f8b2991cb4a
-// flow-typed version: 61b2be7bf2/nock_v9.x.x/flow_>=v0.75.x
+// flow-typed signature: 95866bce8302d4855fe2aab6e9c3ce25
+// flow-typed version: 00cdfecf02/nock_v9.x.x/flow_>=v0.75.x
 
 import EventEmitter from "eventemitter";
 
@@ -41,13 +41,13 @@ declare type $npm$nock$InterceptorOptions = {
 };
 
 declare class $npm$nock$NockBack {
-  [[call]](path: string, cb: (cb: Function) => any): void;
+  static (path: string, cb: (cb: Function) => any): void;
   fixtures: string;
   setMode(mode: string): void;
 }
 
 declare class $npm$nock$Nock {
-  static [[call]](
+  static (
     url: string | RegExp,
     options?: {
       reqheaders?: Object,
