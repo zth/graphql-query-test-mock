@@ -12,8 +12,8 @@ type NockHandleFn = (
   cb: (null, [number, mixed]) => void
 ) => ?[number, mixed];
 
-export function handleNockRequest(queryMock: QueryMock): NockHandleFn {
-  return function handleTheRequest(
+export function getNockRequestHandlerFn(queryMock: QueryMock): NockHandleFn {
+  return function handleNockRequest(
     uri: string,
     data: mixed,
     cb: (null, [number, mixed]) => void

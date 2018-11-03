@@ -2,7 +2,7 @@
 import nock from 'nock';
 import url from 'url';
 import { DEFAULT_CONFIG, defaultChangeServerResponseFn } from './defaults';
-import { handleNockRequest } from './handleNockRequest';
+import { getNockRequestHandlerFn } from './getNockRequestHandlerFn';
 import type { Data, ServerResponse, Variables } from './types';
 
 export type MockGraphQLConfig = {|
@@ -211,6 +211,6 @@ export class QueryMock {
     nock(`${theUrl.protocol || 'https:'}//${theUrl.host || 'localhost'}`)
       .persist()
       .post(theUrl.path || '/')
-      .reply(handleNockRequest(this));
+      .reply(getNockRequestHandlerFn(this));
   }
 }
