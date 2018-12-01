@@ -19,12 +19,12 @@ A few things this library helps with:
 yarn add graphql-query-test-mock nock --dev
 ```
 
-You'll also need to have a `fetch` implementation available in your environment (`jest` does not come with one by default). You could for example use `node-fetch` and put something like 
+You'll also need to have a `fetch` implementation available in your environment (`jest` does not come with one by default). You could for example use `node-fetch` and put something like
 this in your test setup file:
 
 ```
 global.fetch = require('node-fetch');
-``` 
+```
 
 ## Usage
 
@@ -99,17 +99,22 @@ describe('Some test Relay Modern test', () => {
 ```
 
 ## API Reference
+
 ### QueryMock
+
 Create a new `queryMock` by doing: `new QueryMock()`. You then use `queryMock` to handle your mocks.
 
 #### `queryMock.setup(graphQLURL: string)`
+
 Sets up mocking on the specified GraphQL API URL. Make sure you run this before your test suite.
 
 #### `queryMock.reset()`
+
 Resets the `queryMock`, meaning all mocks are removed, and the call history is erased.
 Run this before/after each test to make sure you always start fresh.
 
 #### `queryMock.mockQuery(config)`
+
 Mocks a query. `config` looks like this:
 
 ```javascript
@@ -161,6 +166,15 @@ type MockGraphQLConfig = {|
   variables?: Variables,
 
   /**
+   * A list of properties to ignore when matching variables. This is very useful when you use unstable variables
+   * like dates in your queries. For example:
+   * ignoreThesePropertiesInVariables: ["fromDate", "toDate"] used with variables: { someProp: true, fromDate: someDate, toDate: someOtherDate }
+   * will match variables only on someProp, and ignore fromDate/toDate.
+   */
+
+  ignoreThesePropertiesInVariables?: Array<string>,
+
+  /**
    * Whether to persist this mock or not, meaning whether it should be valid for several
    * calls in a row, or delete itself after being used once. Set this to false when you
    * need to test a more complex flow of calls using the same query, but needing different
@@ -187,7 +201,8 @@ type MockGraphQLConfig = {|
 ```
 
 #### `queryMock.mockQueryWithControlledResolution`
-The same as `mockQuery` above, but returns a function that lets you manually control when you 
+
+The same as `mockQuery` above, but returns a function that lets you manually control when you
 want the mock server to resolve the response. Useful when testing loading states and similar things.
 
 Example:
@@ -200,6 +215,7 @@ expect(getElementByText('Some text from the API.')).toBeTruthy();
 ```
 
 #### `queryMock.getCalls()`
+
 Returns `Array<RecordedGraphQLQuery>` where `RecordedGraphQLQuery` looks like this:
 
 ```javascript
@@ -227,20 +243,43 @@ type RecordedGraphQLQuery = {|
 ```
 
 Useful for various things, for instance checking whether the correct headers are sent:
+
 ```javascript
 const lastCall = queryMock.getCalls().pop();
 expect(lastCall.headers['Authorization']).toBe('Bearer mock-token');
 ```
 
-
 ## FAQ
+
 ##### Why use `nock`, why not just mock `fetch`?
-The goal of this library is to get as close as possible to how your queries would 
-be run in production. Mocking using `nock` ensures that we test that an *actual* request 
-is sent to the *correct URL*.
+
+The goal of this library is to get as close as possible to how your queries would
+be run in production. Mocking using `nock` ensures that we test that an _actual_ request
+is sent to the _correct URL_.
+
+##### How to I handle unstable variables like Date or random things that change for every query?
+
+This is a pretty common thing, for instance when making queries that filter using dates.
+You can do something like this to solve it:
+
+```javascript
+queryMock.mockQuery({
+  name: 'SomeQueryName',
+  variables: {
+    aPropThatIsStable: true
+  },
+  ignoreThesePropertiesInVariables: ['fromDate', 'toDate'],
+  data: dataYouWantToReturn
+});
+```
+
+This makes sure that the query is matched on variables, but ignores "fromDate" and "toDate", which otherwise
+would never match since they're relative and likely change over some period of time.
 
 ##### Creating "real" mock data is very cumbersome! Anything I can do to speed it up?
+
 My personal trick is to add a `console.log` inside of your `fetch` for your framework, like this:
+
 ```javascript
 ...
 .then(res => {

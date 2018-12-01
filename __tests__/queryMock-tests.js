@@ -1,7 +1,6 @@
 // @flow
 import { fetchQuery } from '../__testUtils__/fetchQuery';
 import { queryMock } from '../__testUtils__/queryMock';
-import printDiff from 'jest-diff';
 
 describe('queryMock', () => {
   describe('Basic queries', () => {
@@ -38,6 +37,54 @@ describe('queryMock', () => {
   });
 
   describe('Multiple queries', () => {
+    it('should be able to mock the same query with different variables', async () => {
+      const firstVariables = {
+        first: true
+      };
+
+      const firstTestData = {
+        first: 'data'
+      };
+
+      const secondVariables = {
+        second: true
+      };
+
+      const secondTestData = {
+        second: 'data'
+      };
+
+      queryMock.mockQuery({
+        name: 'TestQuery',
+        variables: firstVariables,
+        data: firstTestData
+      });
+
+      queryMock.mockQuery({
+        name: 'TestQuery',
+        variables: secondVariables,
+        data: secondTestData,
+        persist: false
+      });
+
+      const firstRes = await fetchQuery(
+        {
+          text: 'query TestQuery { id }'
+        },
+        firstVariables
+      );
+
+      const secondRes = await fetchQuery(
+        {
+          text: 'query TestQuery { id }'
+        },
+        secondVariables
+      );
+
+      expect(firstRes.data).toEqual(firstTestData);
+      expect(secondRes.data).toEqual(secondTestData);
+    });
+
     it('should be able to mock queries in sequence with the same query id', async () => {
       const firstTestData = {
         first: 'data'
@@ -135,6 +182,30 @@ describe('queryMock', () => {
             text: 'query TestQuery { id }'
           },
           mockVariables
+        );
+
+        expect(res.data).toEqual(mockData);
+      });
+
+      it('should allow providing properties to ignore when matching', async () => {
+        queryMock.mockQuery({
+          name: 'TestQuery',
+          variables: {
+            someProp: true,
+            someUnstableProp: 123
+          },
+          data: mockData,
+          ignoreThesePropertiesInVariables: ['someUnstableProp']
+        });
+
+        const res = await fetchQuery(
+          {
+            text: 'query TestQuery { id }'
+          },
+          {
+            someProp: true,
+            someUnstableProp: 234
+          }
         );
 
         expect(res.data).toEqual(mockData);
@@ -344,9 +415,7 @@ describe('queryMock', () => {
           text: 'query NoMockForThisOne { id }'
         });
       } catch (e) {
-        expect(e.message).toBe(
-          'No suitable mock for operation "NoMockForThisOne" found. Please make sure you have mocked the query you are making.\n\nCurrently mocked queries: "SomeOtherQuery"'
-        );
+        expect(e.message).toMatchSnapshot();
       }
     });
 
@@ -373,19 +442,7 @@ describe('queryMock', () => {
           }
         );
       } catch (e) {
-        expect(e.message).toBe(
-          'Variables do not match for operation "SomeQuery".\n\nVariables in request VS mocked variables: \n' +
-            printDiff(
-              {
-                some: 'prop',
-                name: false
-              },
-              {
-                some: 'prop',
-                name: true
-              }
-            )
-        );
+        expect(e.message).toMatchSnapshot();
       }
     });
 

@@ -13,6 +13,7 @@ declare module 'graphql-query-test-mock' {
     variables?: Variables,
     matchOnVariables?: boolean,
     matchVariables?: (variables: Variables) => boolean | Promise<boolean>,
+    ignoreThesePropertiesInVariables?: string[],
     status?: number,
     persist?: boolean,
     customHandler?: (req: any) => [number, any],

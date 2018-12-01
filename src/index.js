@@ -1,9 +1,10 @@
 // @flow strict
 import nock from 'nock';
 import url from 'url';
-import { DEFAULT_CONFIG, defaultChangeServerResponseFn } from './defaults';
+import { defaultChangeServerResponseFn } from './defaults';
 import { getNockRequestHandlerFn } from './getNockRequestHandlerFn';
 import type { Data, ServerResponse, Variables } from './types';
+import { createMockGraphQLRecord, getQueryMockID } from './utils';
 
 export type MockGraphQLConfig = {|
   /**
@@ -40,6 +41,8 @@ export type MockGraphQLConfig = {|
   /**
    * This is a convenience method you can use if you want to match on variables in a
    * more dynamic way, for example when using relative dates in your queries.
+   * NOTE: Use this only in very specific cases, instead prefer using "ignoreThesePropertiesInVariables"
+   * defined below.
    *
    * Takes precedence over matchOnVariables above if specified.
    */
@@ -51,6 +54,15 @@ export type MockGraphQLConfig = {|
    * as variables for this query.
    */
   variables?: Variables,
+
+  /**
+   * A list of properties to ignore when matching variables. This is very useful when you use unstable variables
+   * like dates in your queries. For example:
+   * ignoreThesePropertiesInVariables: ["fromDate", "toDate"] used with variables: { someProp: true, fromDate: someDate, toDate: someOtherDate }
+   * will match variables only on someProp, and ignore fromDate/toDate.
+   */
+
+  ignoreThesePropertiesInVariables?: Array<string>,
 
   /**
    * Whether to persist this mock or not, meaning whether it should be valid for several
@@ -78,6 +90,7 @@ export type MockGraphQLConfig = {|
 |};
 
 export type MockGraphQLRecord = {|
+  id: string,
   queryMockConfig: MockGraphQLConfig,
   resolveQueryPromise?: Promise<mixed>
 |};
@@ -156,12 +169,9 @@ export class QueryMock {
   }
 
   mockQuery(config: MockGraphQLConfig) {
-    this._getOrCreateMockQueryHolder(config.name).push({
-      queryMockConfig: {
-        ...DEFAULT_CONFIG,
-        ...config
-      }
-    });
+    this._getOrCreateMockQueryHolder(config.name).push(
+      createMockGraphQLRecord(config)
+    );
   }
 
   mockQueryWithControlledResolution(config: MockGraphQLConfig): () => void {
@@ -180,27 +190,82 @@ export class QueryMock {
       }, 50);
     };
 
-    this._getOrCreateMockQueryHolder(config.name).push({
-      queryMockConfig: {
-        ...DEFAULT_CONFIG,
-        ...config
-      },
-      resolveQueryPromise
-    });
+    this._getOrCreateMockQueryHolder(config.name).push(
+      createMockGraphQLRecord(config, resolveQueryPromise)
+    );
 
     return resolveQueryFn;
   }
 
-  _getQueryMock(name: string): ?MockGraphQLRecord {
+  _getQueryMock(name: string, variables: ?Variables): ?MockGraphQLRecord {
     const queryMockHolder = this._queries[name];
 
     if (!queryMockHolder || queryMockHolder.length < 1) {
       return null;
     }
 
-    return queryMockHolder[0].queryMockConfig.persist
-      ? queryMockHolder[0]
-      : queryMockHolder.shift();
+    let matchingQueryMock: ?MockGraphQLRecord = null;
+
+    for (let i = 0; i <= queryMockHolder.length - 1; i += 1) {
+      const thisQueryMock = queryMockHolder[i];
+
+      const {
+        matchVariables,
+        matchOnVariables,
+        ignoreThesePropertiesInVariables
+      } = thisQueryMock.queryMockConfig;
+
+      // Use custom variables match function if it exists
+      if (matchVariables && matchVariables(variables || {})) {
+        matchingQueryMock = thisQueryMock;
+        break;
+      }
+
+      // Bail if this query mock is not configured to match on variables. We handle that case below after the loop.
+      if (!matchOnVariables) {
+        continue;
+      }
+
+      /**
+       * Get the ID of this particular mocked query using the provided mock's data.
+       * This enables us to check if this mock matches, accounting for any properties
+       * that are to be ignored in the mock variables.
+       */
+      const processedIdForProvidedMockData = getQueryMockID(
+        name,
+        variables,
+        ignoreThesePropertiesInVariables || []
+      );
+
+      if (processedIdForProvidedMockData === thisQueryMock.id) {
+        matchingQueryMock = thisQueryMock;
+        break;
+      }
+    }
+
+    /**
+     * If we got all the way here it means we found no matches.
+     * We'll check if any of the mocked queries has variable matching off,
+     * and if so return that. We start from the latest added queries.
+     */
+    for (let i = queryMockHolder.length - 1; i >= 0; i -= 1) {
+      const thisQueryMock = queryMockHolder[i];
+
+      if (!thisQueryMock.queryMockConfig.matchOnVariables) {
+        matchingQueryMock = thisQueryMock;
+        break;
+      }
+    }
+
+    if (matchingQueryMock) {
+      return matchingQueryMock.queryMockConfig.persist
+        ? matchingQueryMock
+        : queryMockHolder
+            .splice(queryMockHolder.indexOf(matchingQueryMock), 1)
+            .pop();
+    }
+
+    return null;
   }
 
   setup(graphQLURL: string) {

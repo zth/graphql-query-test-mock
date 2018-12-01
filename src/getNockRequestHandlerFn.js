@@ -32,7 +32,10 @@ export function getNockRequestHandlerFn(queryMock: QueryMock): NockHandleFn {
             ? data.variables
             : {};
 
-        const mockedQueryRecord = queryMock._getQueryMock(operationName);
+        const mockedQueryRecord = queryMock._getQueryMock(
+          operationName,
+          variables
+        );
 
         if (mockedQueryRecord) {
           const { queryMockConfig, resolveQueryPromise } = mockedQueryRecord;
@@ -123,10 +126,29 @@ export function getNockRequestHandlerFn(queryMock: QueryMock): NockHandleFn {
           const mockedQueries = Object.keys(queryMock._queries);
           throw new Error(
             `No suitable mock for operation "${operationName ||
-              'unknown'}" found. Please make sure you have mocked the query you are making.${
+              'unknown'}" with variables ${JSON.stringify(
+              variables
+            )} found. Please make sure you have mocked the query you are making.${
               mockedQueries.length > 0
-                ? '\n\nCurrently mocked queries: ' +
-                  mockedQueries.map(queryName => `"${queryName}"`).join(', ')
+                ? '\n\n === Currently mocked queries ===\n' +
+                  mockedQueries
+                    .map(
+                      queryName =>
+                        `"${queryName}" with variables: \n\n  ${queryMock._queries[
+                          queryName
+                        ]
+                          .map(
+                            ({ queryMockConfig }) =>
+                              `${JSON.stringify(
+                                queryMockConfig.variables
+                              )}, diff: \n${printDiff(
+                                variables,
+                                queryMockConfig.variables
+                              )}`
+                          )
+                          .join('\n\n  ')}`
+                    )
+                    .join(', ')
                 : ''
             }`
           );
