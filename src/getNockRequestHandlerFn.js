@@ -5,6 +5,7 @@ import { QueryMock } from './index';
 import type { ChangeServerResponseFn } from './index';
 import type { ServerResponse } from './types';
 import printDiff from 'jest-diff';
+import { getVariables } from './utils';
 
 type NockHandleFn = (
   uri: string,
@@ -61,7 +62,16 @@ export function getNockRequestHandlerFn(queryMock: QueryMock): NockHandleFn {
             !shouldMatchOnVariables || // Bypass if we should not match on variables
             (queryMockConfig.matchVariables
               ? queryMockConfig.matchVariables(variables)
-              : deepEqual(variables, queryMockConfig.variables))
+              : deepEqual(
+                  getVariables(
+                    variables,
+                    queryMockConfig.ignoreThesePropertiesInVariables || []
+                  ),
+                  getVariables(
+                    queryMockConfig.variables,
+                    queryMockConfig.ignoreThesePropertiesInVariables || []
+                  )
+                ))
           ) {
             const serverResponseData: ServerResponse = {
               data: queryMockConfig.data

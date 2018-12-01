@@ -1,5 +1,8 @@
 # Changelog
 
+## 0.9.6
+- Bug fix from accidental mutation. Mutability is fun, but hard!
+
 ## 0.9.5
 - Added `ignoreThesePropertiesInVariables: Array<string>` to the mock config, which basically is a more convenient way of 
 filtering out unstable variables you may use in your queries (like dates).

@@ -8,13 +8,27 @@ export function getQueryMockID(
   variables: ?Variables,
   ignoreThesePropertiesInVariables: Array<string>
 ): string {
-  const processedVariables = variables || {};
-
-  ignoreThesePropertiesInVariables.forEach(propName => {
-    delete processedVariables[propName];
-  });
+  const processedVariables = getVariables(
+    variables,
+    ignoreThesePropertiesInVariables
+  );
 
   return `${queryName}__${JSON.stringify(processedVariables)}`;
+}
+
+export function getVariables(
+  variables: ?Variables,
+  ignoreThesePropertiesInVariables: Array<string>
+): Variables {
+  const vars = {
+    ...variables
+  };
+
+  ignoreThesePropertiesInVariables.forEach(propName => {
+    delete vars[propName];
+  });
+
+  return vars;
 }
 
 export function createMockGraphQLRecord(
