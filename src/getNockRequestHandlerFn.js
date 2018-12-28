@@ -1,10 +1,13 @@
 // @flow strict
 import deepEqual from 'deep-equal';
 import { getOperationNameFromQuery } from './getOperationNameFromQuery';
+import {
+  printNoMockFoundError,
+  printVariablesDoesNotMatchError
+} from './handleErrors';
 import { QueryMock } from './index';
 import type { ChangeServerResponseFn } from './index';
 import type { ServerResponse } from './types';
-import printDiff from 'jest-diff';
 import { getVariables } from './utils';
 
 type NockHandleFn = (
@@ -114,54 +117,15 @@ export function getNockRequestHandlerFn(queryMock: QueryMock): NockHandleFn {
             }
           } else {
             // More useful errors
-            if (shouldMatchOnVariables) {
-              let errorStr = `Variables do not match for operation "${operationName ||
-                'unknown'}"`;
-
-              if (queryMockConfig.matchVariables) {
-                throw new Error(
-                  `${errorStr} due to custom "matchOnVariables" function`
-                );
-              } else {
-                throw new Error(
-                  `${errorStr}.\n\nVariables in request VS mocked variables: \n${printDiff(
-                    variables,
-                    queryMockConfig.variables
-                  )}`
-                );
-              }
-            }
+            printVariablesDoesNotMatchError(
+              queryMockConfig,
+              shouldMatchOnVariables,
+              operationName,
+              variables
+            );
           }
         } else {
-          const mockedQueries = Object.keys(queryMock._queries);
-          throw new Error(
-            `No suitable mock for operation "${operationName ||
-              'unknown'}" with variables ${JSON.stringify(
-              variables
-            )} found. Please make sure you have mocked the query you are making.${
-              mockedQueries.length > 0
-                ? '\n\n === Currently mocked queries ===\n' +
-                  mockedQueries
-                    .map(
-                      queryName =>
-                        `"${queryName}" with variables: \n\n  ${queryMock._queries[
-                          queryName
-                        ]
-                          .map(
-                            ({ queryMockConfig }) =>
-                              `${JSON.stringify(
-                                queryMockConfig.variables
-                              )}, diff: \n${printDiff(
-                                variables,
-                                queryMockConfig.variables
-                              )}`
-                          )
-                          .join('\n\n  ')}`
-                    )
-                    .join(', ')
-                : ''
-            }`
-          );
+          printNoMockFoundError(queryMock, operationName, variables);
         }
       } else {
         throw new Error(
