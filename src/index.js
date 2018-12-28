@@ -127,23 +127,30 @@ export type ChangeServerResponseFn = (
 ) => ServerResponse;
 
 type CreateQueryMockConfig = {|
-  changeServerResponse?: ChangeServerResponseFn
+  changeServerResponse?: ChangeServerResponseFn,
+  getRawSchema?: () => string
 |};
 
 export class QueryMock {
+  _autoMock: boolean = false;
   _calls: Array<RecordedGraphQLQuery> = [];
   _queries: QueryStoreObj = {};
   _changeServerResponseFn: ChangeServerResponseFn = defaultChangeServerResponseFn;
+  _getRawSchema: ?() => string = null;
 
   constructor(config: ?CreateQueryMockConfig) {
     if (!config) {
       return;
     }
 
-    const { changeServerResponse } = config;
+    const { changeServerResponse, getRawSchema } = config;
 
     if (changeServerResponse) {
       this._changeServerResponseFn = changeServerResponse;
+    }
+
+    if (getRawSchema) {
+      this._getRawSchema = getRawSchema;
     }
   }
 
@@ -154,6 +161,7 @@ export class QueryMock {
   reset() {
     this._calls = [];
     this._queries = {};
+    this._autoMock = false;
   }
 
   getCalls(): Array<RecordedGraphQLQuery> {
@@ -277,5 +285,23 @@ export class QueryMock {
       .persist()
       .post(theUrl.path || '/')
       .reply(getNockRequestHandlerFn(this));
+  }
+
+  setAutoMock(value: boolean): void {
+    this._autoMock = value;
+  }
+
+  shouldAutoMock(): boolean {
+    return this._autoMock;
+  }
+
+  getRawSchema(): string {
+    if (this._getRawSchema) {
+      return this._getRawSchema();
+    }
+
+    throw new Error(
+      `QueryMock must be initialized with a 'getRawSchema' function that returns the schema.`
+    );
   }
 }

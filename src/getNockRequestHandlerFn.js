@@ -5,6 +5,7 @@ import {
   printNoMockFoundError,
   printVariablesDoesNotMatchError
 } from './handleErrors';
+import { returnMockData } from './handleMockData';
 import { QueryMock } from './index';
 import type { ChangeServerResponseFn } from './index';
 import type { ServerResponse } from './types';
@@ -20,17 +21,15 @@ export function getNockRequestHandlerFn(queryMock: QueryMock): NockHandleFn {
   return function handleNockRequest(
     uri: string,
     data: mixed,
-    cb: (null, [number, mixed]) => void
+    resolveNockRequestCallback: (null, [number, mixed]) => void
   ) {
     let operationName: ?string = null;
 
     if (data && typeof data === 'object') {
-      operationName =
-        typeof data.query === 'string'
-          ? getOperationNameFromQuery(data.query)
-          : null;
+      const queryStr = typeof data.query === 'string' ? data.query : null;
+      operationName = queryStr ? getOperationNameFromQuery(queryStr) : null;
 
-      if (operationName) {
+      if (operationName && queryStr) {
         const variables =
           data.variables !== null && typeof data.variables === 'object'
             ? data.variables
@@ -109,10 +108,10 @@ export function getNockRequestHandlerFn(queryMock: QueryMock): NockHandleFn {
               // Wait for resolution control promise to resolve if it exists
               (async () => {
                 await resolveQueryPromise;
-                cb(null, nockReturnVal);
+                resolveNockRequestCallback(null, nockReturnVal);
               })();
             } else {
-              cb(null, nockReturnVal);
+              resolveNockRequestCallback(null, nockReturnVal);
               return nockReturnVal;
             }
           } else {
@@ -125,7 +124,16 @@ export function getNockRequestHandlerFn(queryMock: QueryMock): NockHandleFn {
             );
           }
         } else {
-          printNoMockFoundError(queryMock, operationName, variables);
+          if (queryMock.shouldAutoMock()) {
+            (async () => {
+              resolveNockRequestCallback(null, [
+                200,
+                await returnMockData(queryMock, queryStr, variables)
+              ]);
+            })();
+          } else {
+            printNoMockFoundError(queryMock, operationName, variables);
+          }
         }
       } else {
         throw new Error(
