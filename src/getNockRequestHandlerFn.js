@@ -14,7 +14,7 @@ type NockHandleFn = (
   uri: string,
   data: mixed,
   cb: (null, [number, mixed]) => void
-) => ?[number, mixed];
+) => void;
 
 export function getNockRequestHandlerFn(queryMock: QueryMock): NockHandleFn {
   return function handleNockRequest(
@@ -22,10 +22,8 @@ export function getNockRequestHandlerFn(queryMock: QueryMock): NockHandleFn {
     data: mixed,
     cb: (null, [number, mixed]) => void
   ) {
-    let operationName: ?string = null;
-
     if (data && typeof data === 'object') {
-      operationName =
+      const operationName =
         typeof data.query === 'string'
           ? getOperationNameFromQuery(data.query)
           : null;
@@ -113,7 +111,6 @@ export function getNockRequestHandlerFn(queryMock: QueryMock): NockHandleFn {
               })();
             } else {
               cb(null, nockReturnVal);
-              return nockReturnVal;
             }
           } else {
             // More useful errors
