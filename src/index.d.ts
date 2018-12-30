@@ -2,38 +2,49 @@ declare module 'graphql-query-test-mock' {
   type Variables = { [key: string]: any };
   type Data = { [key: string]: any };
 
-  type ServerResponse = {
-    data: Data
+  type CustomHandlerConfigData = {
+    query: string;
+    operationName: string;
+    variables: Variables;
   };
 
+  type ServerResponse = {
+    data: Data;
+  };
+
+  type NockReturnVal = [number, ServerResponse];
+
   export type MockGraphQLConfig = {
-    name: string,
-    data: Data,
-    error?: Data,
-    variables?: Variables,
-    matchOnVariables?: boolean,
-    matchVariables?: (variables: Variables) => boolean | Promise<boolean>,
-    ignoreThesePropertiesInVariables?: string[],
-    status?: number,
-    persist?: boolean,
-    customHandler?: (req: any) => [number, any],
-    changeServerResponse?: ChangeServerResponseFn
+    name: string;
+    data: Data;
+    error?: Data;
+    variables?: Variables;
+    matchOnVariables?: boolean;
+    matchVariables?: (variables: Variables) => boolean | Promise<boolean>;
+    ignoreThesePropertiesInVariables?: string[];
+    status?: number;
+    persist?: boolean;
+    customHandler?: (
+      req: any,
+      config: CustomHandlerConfigData
+    ) => NockReturnVal | Promise<NockReturnVal>;
+    changeServerResponse?: ChangeServerResponseFn;
   };
 
   export type MockGraphQLRecord = {
-    queryMockConfig: MockGraphQLConfig,
-    resolveQueryPromise?: Promise<any>
+    queryMockConfig: MockGraphQLConfig;
+    resolveQueryPromise?: Promise<any>;
   };
 
   export type RecordedGraphQLQuery = {
-    id: string,
-    variables?: Variables,
-    headers: { [key: string]: string },
-    response: ServerResponse
+    id: string;
+    variables?: Variables;
+    headers: { [key: string]: string };
+    response: ServerResponse;
   };
 
   type QueryStoreObj = {
-    [queryName: string]: Array<MockGraphQLRecord>
+    [queryName: string]: Array<MockGraphQLRecord>;
   };
 
   export type ChangeServerResponseFn = (
@@ -42,7 +53,7 @@ declare module 'graphql-query-test-mock' {
   ) => ServerResponse;
 
   type CreateQueryMockConfig = {
-    changeServerResponse?: ChangeServerResponseFn
+    changeServerResponse?: ChangeServerResponseFn;
   };
 
   export class QueryMock {
