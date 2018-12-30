@@ -1,5 +1,8 @@
 # Changelog
 
+## 0.10.0
+- `customHandler` can now be async and return a promise. This should simplify experimenting with automocking and other things needing async. 
+
 ## 0.9.6
 - Bug fix from accidental mutation. Mutability is fun, but hard!
 
