@@ -119,6 +119,50 @@ describe('queryMock', () => {
     });
   });
 
+  describe('Custom handler', () => {
+    it('should be able to use a custom handler to fully control return of fn', async () => {
+      const mockCustomHandler = jest.fn((req, config) => [
+        200,
+        { data: { id: '123' } }
+      ]);
+
+      queryMock.mockQuery({
+        name: 'TestQuery',
+        data: {},
+        customHandler: mockCustomHandler
+      });
+
+      const res = await fetchQuery({
+        text: 'query TestQuery { id }'
+      });
+
+      expect(res.data).toEqual({ id: '123' });
+      expect(queryMock._calls.length).toBe(1);
+
+      expect(mockCustomHandler).toHaveBeenCalledTimes(1);
+      expect(mockCustomHandler.mock.calls[0][1]).toEqual({
+        operationName: 'TestQuery',
+        query: 'query TestQuery { id }',
+        variables: {}
+      });
+    });
+
+    test('custom handler should support returning a promise', async () => {
+      queryMock.mockQuery({
+        name: 'TestQuery',
+        data: {},
+        customHandler: async (req, config) => [200, { data: { id: '123' } }]
+      });
+
+      const res = await fetchQuery({
+        text: 'query TestQuery { id }'
+      });
+
+      expect(res.data).toEqual({ id: '123' });
+      expect(queryMock._calls.length).toBe(1);
+    });
+  });
+
   describe('Setup', () => {
     describe('Resetting queries', () => {
       it('should resolve here as this is where the query mock is setup', async () => {

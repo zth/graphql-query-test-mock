@@ -5,3 +5,5 @@ export type Data = { [key: string]: mixed };
 export type ServerResponse = {
   data: Data
 };
+
+export type NockReturnValue = [number, ServerResponse];

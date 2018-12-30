@@ -7,26 +7,25 @@ import {
 } from './handleErrors';
 import { QueryMock } from './index';
 import type { ChangeServerResponseFn } from './index';
-import type { ServerResponse } from './types';
+import type { NockReturnValue, ServerResponse } from './types';
 import { getVariables } from './utils';
 
 type NockHandleFn = (
   uri: string,
   data: mixed,
-  cb: (null, [number, mixed]) => void
+  cb: (null, NockReturnValue) => void
 ) => void;
 
 export function getNockRequestHandlerFn(queryMock: QueryMock): NockHandleFn {
   return function handleNockRequest(
     uri: string,
     data: mixed,
-    cb: (null, [number, mixed]) => void
+    cb: (null, NockReturnValue) => void
   ) {
     if (data && typeof data === 'object') {
-      const operationName =
-        typeof data.query === 'string'
-          ? getOperationNameFromQuery(data.query)
-          : null;
+      const query = String(data.query);
+
+      const operationName = getOperationNameFromQuery(query);
 
       if (operationName) {
         const variables =
@@ -74,44 +73,65 @@ export function getNockRequestHandlerFn(queryMock: QueryMock): NockHandleFn {
                   )
                 ))
           ) {
-            const serverResponseData: ServerResponse = {
-              data: queryMockConfig.data
-            };
-
             /**
-             * This is a default function that just returns itself (ie does not change the server response)
-             * unless provided a custom function.
-             **/
-            const changeServerResponseFn: ChangeServerResponseFn =
-              queryMockConfig.changeServerResponse ||
-              queryMock._changeServerResponseFn;
+             * We turn our request handler function into an async one at this point and not earlier,
+             * because this is the first time we're absolutely sure we will resolve the query and that
+             * we won't need to throw an error. Throwing inside the async function will make the Promise swallow
+             * the error, which we do not want.
+             */
+            (async () => {
+              const serverResponseData: ServerResponse = {
+                data: queryMockConfig.data
+              };
 
-            const serverResponse = changeServerResponseFn(
-              queryMockConfig,
-              serverResponseData
-            );
+              /**
+               * This is a default function that just returns itself (ie does not change the server response)
+               * unless provided a custom function.
+               **/
+              const changeServerResponseFn: ChangeServerResponseFn =
+                queryMockConfig.changeServerResponse ||
+                queryMock._changeServerResponseFn;
 
-            const nockReturnVal = queryMockConfig.customHandler
-              ? queryMockConfig.customHandler(this.req)
-              : [queryMockConfig.status || 200, serverResponse];
+              const serverResponse = changeServerResponseFn(
+                queryMockConfig,
+                serverResponseData
+              );
 
-            // Make sure we add the call to our list
-            queryMock._addCall({
-              id: operationName,
-              variables,
-              headers: this.req.headers,
-              response: serverResponse
-            });
+              let nockReturnVal: NockReturnValue = [
+                queryMockConfig.status || 200,
+                serverResponse
+              ];
 
-            if (resolveQueryPromise) {
+              const { customHandler } = queryMockConfig;
+
+              if (customHandler) {
+                const returnValue = customHandler(this.req, {
+                  query,
+                  operationName,
+                  variables
+                });
+
+                nockReturnVal =
+                  returnValue instanceof Promise
+                    ? await returnValue
+                    : returnValue;
+              }
+
+              // Make sure we add the call to our list
+              queryMock._addCall({
+                id: operationName,
+                variables,
+                headers: this.req.headers,
+                response: nockReturnVal[1]
+              });
+
               // Wait for resolution control promise to resolve if it exists
-              (async () => {
+              if (resolveQueryPromise) {
                 await resolveQueryPromise;
-                cb(null, nockReturnVal);
-              })();
-            } else {
+              }
+
               cb(null, nockReturnVal);
-            }
+            })();
           } else {
             // More useful errors
             printVariablesDoesNotMatchError(

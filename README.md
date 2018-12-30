@@ -189,7 +189,14 @@ type MockGraphQLConfig = {|
    * `req` is the `nock` request, and it expects you to return [statusCode, serverResponse], like:
    * [200, { data: { id: '123 } }].
    */
-  customHandler?: (req: *) => [number, mixed],
+  customHandler?: (
+    req: any,
+    config: {|
+      query: string,
+      operationName: string,
+      variables: ?Variables
+    |}
+  ) => [number, ServerResponse] | Promise<[number, ServerResponse]>,
 
   /**
    * Sometimes you need to change the server response object dynamically for a query mock.
