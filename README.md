@@ -256,6 +256,10 @@ const lastCall = queryMock.getCalls().pop();
 expect(lastCall.headers['Authorization']).toBe('Bearer mock-token');
 ```
 
+#### `queryMock.cleanup()`
+
+Runs a cleanup on nock to re-enable real network requests on the mocked endpoint.
+
 ## FAQ
 
 ##### Why use `nock`, why not just mock `fetch`?
