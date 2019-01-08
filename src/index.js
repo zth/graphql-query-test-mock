@@ -285,4 +285,9 @@ export class QueryMock {
       .post(theUrl.path || '/')
       .reply(getNockRequestHandlerFn(this));
   }
+
+  cleanup() {
+    nock.cleanAll();
+    nock.enableNetConnect();
+  }
 }
