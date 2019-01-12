@@ -67,5 +67,6 @@ declare module 'graphql-query-test-mock' {
     mockQueryWithControlledResolution(config: MockGraphQLConfig): () => void;
     getQueryMock(name: string): MockGraphQLRecord | undefined;
     setup(graphQLURL: string): void;
+    cleanup(): void;
   }
 }
