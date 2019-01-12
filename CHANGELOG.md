@@ -1,5 +1,8 @@
 # Changelog
 
+## 0.10.2
+- Adds a method to clean up `nock`.
+
 ## 0.10.1
 
 - Updating TypeScript definitions.
