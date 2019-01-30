@@ -83,6 +83,6 @@
     "tabWidth": 2,
     "semi": true,
     "singleQuote": true,
-    "lineWidth": 80
+    "printWidth": 80
   }
 }
