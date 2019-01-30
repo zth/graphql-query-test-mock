@@ -46,9 +46,12 @@
     "flow-bin": "^0.89.0",
     "flow-copy-source": "^2.0.2",
     "flow-typed": "^2.5.1",
+    "husky": "^1.3.1",
     "jest": "^23.5.0",
+    "lint-staged": "^8.1.1",
     "nock": "^9.6.1",
     "node-fetch": "^2.2.0",
+    "prettier": "^1.16.2",
     "typescript": "3.1.3"
   },
   "dependencies": {
@@ -64,5 +67,22 @@
     "setupFiles": [
       "./setup/jest.setup.js"
     ]
+  },
+  "husky": {
+    "hooks": {
+      "pre-commit": "lint-staged"
+    }
+  },
+  "lint-staged": {
+    "*.{js,json,md}": [
+      "prettier --write",
+      "git add"
+    ]
+  },
+  "prettier": {
+    "tabWidth": 2,
+    "semi": true,
+    "singleQuote": true,
+    "lineWidth": 80
   }
 }
