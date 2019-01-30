@@ -1,6 +1,6 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`handleErrors printNoMockFoundError message should show an error when there are both matching and non-matching query names 1`] = `
+exports[`handleErrors printNoMockFoundError should throw an error when there are both matching and non-matching query names 1`] = `
 "Could not find matching mock for operation \\"TestQuery1\\" with variables: {}
 Make sure you have mocked the query you are making.
 
@@ -21,7 +21,7 @@ Diff of \\"variables\\":
 "
 `;
 
-exports[`handleErrors printNoMockFoundError message should show an error when there are multiple matching query names 1`] = `
+exports[`handleErrors printNoMockFoundError should throw an error when there are multiple matching query names 1`] = `
 "Could not find matching mock for operation \\"TestQuery\\" with variables: {}
 Make sure you have mocked the query you are making.
 
@@ -49,7 +49,7 @@ Diff of \\"variables\\":
 "
 `;
 
-exports[`handleErrors printNoMockFoundError message should show an error when there are multiple non-matching query names 1`] = `
+exports[`handleErrors printNoMockFoundError should throw an error when there are multiple non-matching query names 1`] = `
 "Could not find matching mock for operation \\"TestQuery3\\" with variables: {}
 Make sure you have mocked the query you are making.
 
@@ -61,7 +61,7 @@ Make sure you have mocked the query you are making.
 "
 `;
 
-exports[`handleErrors printNoMockFoundError message should show an error when there is 1 matching query name 1`] = `
+exports[`handleErrors printNoMockFoundError should throw an error when there is 1 matching query name 1`] = `
 "Could not find matching mock for operation \\"TestQuery\\" with variables: {}
 Make sure you have mocked the query you are making.
 
@@ -79,7 +79,7 @@ Diff of \\"variables\\":
 "
 `;
 
-exports[`handleErrors printNoMockFoundError message should show an error when there is 1 non-matching query names 1`] = `
+exports[`handleErrors printNoMockFoundError should throw an error when there is 1 non-matching query names 1`] = `
 "Could not find matching mock for operation \\"TestQuery2\\" with variables: {}
 Make sure you have mocked the query you are making.
 
@@ -89,7 +89,7 @@ Make sure you have mocked the query you are making.
 "
 `;
 
-exports[`handleErrors printNoMockFoundError message should show an error when there is no mocked query 1`] = `
+exports[`handleErrors printNoMockFoundError should throw an error when there is no mocked query 1`] = `
 "Could not find matching mock for operation \\"TestQuery\\" with variables: {}
 Make sure you have mocked the query you are making.
 
@@ -98,4 +98,4 @@ Make sure you have mocked the query you are making.
 "
 `;
 
-exports[`handleErrors printNoMockFoundError message should show an error when there is no query name 1`] = `"Could not find query name."`;
+exports[`handleErrors printNoMockFoundError should throw an error when there is no query name 1`] = `"Could not find query name."`;
