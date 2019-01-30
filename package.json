@@ -25,6 +25,7 @@
     "test:watch": "yarn test --watch",
     "prepublish": "yarn build && yarn flow && yarn test",
     "flow": "flow check",
+    "prettier": "prettier src/**/* --write",
     "build": "rm -rf lib && babel src --copy-files --out-dir lib && flow-copy-source src lib"
   },
   "files": [
