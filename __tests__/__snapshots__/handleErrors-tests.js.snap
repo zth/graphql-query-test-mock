@@ -1,0 +1,101 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`handleErrors printNoMockFoundError should throw an error when there are both matching and non-matching query names 1`] = `
+"Could not find matching mock for operation \\"TestQuery1\\" with variables: {}
+Make sure you have mocked the query you are making.
+
+=== Currently mocked \\"TestQuery1\\" queries ===
+Query \\"variables\\": {\\"variable1\\":\\"VARIABLE_1\\"}
+Diff of \\"variables\\":
+[32m- Expected[39m
+[31m+ Received[39m
+
+[32m- Object {[39m
+[32m-   \\"variable1\\": \\"VARIABLE_1\\",[39m
+[32m- }[39m
+[31m+ Object {}[39m
+
+=== Other mocked queries ===
+- \\"TestQuery2\\"
+
+"
+`;
+
+exports[`handleErrors printNoMockFoundError should throw an error when there are multiple matching query names 1`] = `
+"Could not find matching mock for operation \\"TestQuery\\" with variables: {}
+Make sure you have mocked the query you are making.
+
+=== Currently mocked \\"TestQuery\\" queries ===
+Query \\"variables\\": {\\"variable1\\":\\"VARIABLE_1\\"}
+Diff of \\"variables\\":
+[32m- Expected[39m
+[31m+ Received[39m
+
+[32m- Object {[39m
+[32m-   \\"variable1\\": \\"VARIABLE_1\\",[39m
+[32m- }[39m
+[31m+ Object {}[39m
+
+Query \\"variables\\": {\\"variable2\\":\\"VARIABLE_2\\"}
+Diff of \\"variables\\":
+[32m- Expected[39m
+[31m+ Received[39m
+
+[32m- Object {[39m
+[32m-   \\"variable2\\": \\"VARIABLE_2\\",[39m
+[32m- }[39m
+[31m+ Object {}[39m
+
+"
+`;
+
+exports[`handleErrors printNoMockFoundError should throw an error when there are multiple non-matching query names 1`] = `
+"Could not find matching mock for operation \\"TestQuery3\\" with variables: {}
+Make sure you have mocked the query you are making.
+
+=== All mocked queries ===
+- \\"TestQuery1\\"
+- \\"TestQuery2\\"
+- \\"unknown\\"
+
+"
+`;
+
+exports[`handleErrors printNoMockFoundError should throw an error when there is 1 matching query name 1`] = `
+"Could not find matching mock for operation \\"TestQuery\\" with variables: {}
+Make sure you have mocked the query you are making.
+
+=== Currently mocked \\"TestQuery\\" queries ===
+Query \\"variables\\": {\\"variable1\\":\\"VARIABLE_1\\"}
+Diff of \\"variables\\":
+[32m- Expected[39m
+[31m+ Received[39m
+
+[32m- Object {[39m
+[32m-   \\"variable1\\": \\"VARIABLE_1\\",[39m
+[32m- }[39m
+[31m+ Object {}[39m
+
+"
+`;
+
+exports[`handleErrors printNoMockFoundError should throw an error when there is 1 non-matching query names 1`] = `
+"Could not find matching mock for operation \\"TestQuery2\\" with variables: {}
+Make sure you have mocked the query you are making.
+
+=== All mocked queries ===
+- \\"TestQuery1\\"
+
+"
+`;
+
+exports[`handleErrors printNoMockFoundError should throw an error when there is no mocked query 1`] = `
+"Could not find matching mock for operation \\"TestQuery\\" with variables: {}
+Make sure you have mocked the query you are making.
+
+=== No query was mocked ===
+
+"
+`;
+
+exports[`handleErrors printNoMockFoundError should throw an error when there is no query name 1`] = `"Could not find query name."`;
