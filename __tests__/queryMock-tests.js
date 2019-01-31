@@ -206,25 +206,47 @@ describe('queryMock', () => {
     beforeEach(() => {
       mockData = { some: 'data' };
       mockVariables = {
-        firstParam: [
-          {
-            firstNestedParam: 'firstNestedParam 1',
-            secondNestedParam: 'secondNestedParam 1'
-          },
-          {
-            firstNestedParam: 'firstNestedParam 2',
-            secondNestedParam: 'secondNestedParam 2'
-          }
-        ],
-        secondParam: 'secondParam'
+        includeStuff: true,
+        withStuff: true,
+        filterOn: [123, 345],
+        after: 'cursor'
       };
     });
 
     describe('By object', () => {
-      it('should match on the variables object no matter the order of the object properties', async () => {
+      it('should make sure variables match provided variables object if provided', async () => {
         queryMock.mockQuery({
           name: 'TestQuery',
           variables: mockVariables,
+          data: mockData
+        });
+
+        const res = await fetchQuery(
+          {
+            text: 'query TestQuery { id }'
+          },
+          mockVariables
+        );
+
+        expect(res.data).toEqual(mockData);
+      });
+
+      it('should match on the variables object no matter the order of the object properties', async () => {
+        queryMock.mockQuery({
+          name: 'TestQuery',
+          variables: {
+            firstParam: [
+              {
+                firstNestedParam: 'firstNestedParam 1',
+                secondNestedParam: 'secondNestedParam 1'
+              },
+              {
+                firstNestedParam: 'firstNestedParam 2',
+                secondNestedParam: 'secondNestedParam 2'
+              }
+            ],
+            secondParam: 'secondParam'
+          },
           data: mockData
         });
 
@@ -253,7 +275,9 @@ describe('queryMock', () => {
       it('should not match on the provided variables object if arrays are not ordered the same way', async () => {
         queryMock.mockQuery({
           name: 'TestQuery',
-          variables: mockVariables,
+          variables: {
+            param: [{ id: 1 }, { id: 2 }]
+          },
           data: mockData
         });
 
@@ -265,17 +289,7 @@ describe('queryMock', () => {
               text: 'query TestQuery { id }'
             },
             {
-              firstParam: [
-                {
-                  firstNestedParam: 'firstNestedParam 2',
-                  secondNestedParam: 'secondNestedParam 2'
-                },
-                {
-                  firstNestedParam: 'firstNestedParam 1',
-                  secondNestedParam: 'secondNestedParam 1'
-                }
-              ],
-              secondParam: 'secondParam'
+              param: [{ id: 2 }, { id: 1 }]
             }
           );
         } catch (e) {
@@ -368,7 +382,7 @@ describe('queryMock', () => {
       it('should allow matching variables with custom function', async () => {
         queryMock.mockQuery({
           name: 'TestQuery',
-          matchVariables: variables => variables.secondParam === 'secondParam',
+          matchVariables: variables => variables.includeStuff === true,
           data: mockData
         });
 
