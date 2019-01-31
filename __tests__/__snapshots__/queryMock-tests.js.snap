@@ -1,28 +1,30 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
 exports[`queryMock Error messages should print a diff of variables from request + in the mock when mock is to be matched on variables, but the variables do not actually match 1`] = `
-"No suitable mock for operation \\"SomeQuery\\" with variables {\\"some\\":\\"prop\\",\\"name\\":false} found. Please make sure you have mocked the query you are making.
+"Could not find matching mock for operation \\"SomeQuery\\" with variables: {\\"some\\":\\"prop\\",\\"name\\":false}
+Make sure you have mocked the query you are making.
 
- === Currently mocked queries ===
-\\"SomeQuery\\" with variables: 
-
-  {\\"some\\":\\"prop\\",\\"name\\":true}, diff: 
+=== Currently mocked \\"SomeQuery\\" queries ===
+Query \\"variables\\": {\\"some\\":\\"prop\\",\\"name\\":true}
+Diff of \\"variables\\":
 [32m- Expected[39m
 [31m+ Received[39m
 
 [2m  Object {[22m
-[32m-   \\"name\\": false,[39m
-[31m+   \\"name\\": true,[39m
+[32m-   \\"name\\": true,[39m
+[31m+   \\"name\\": false,[39m
 [2m    \\"some\\": \\"prop\\",[22m
-[2m  }[22m"
+[2m  }[22m
+
+"
 `;
 
 exports[`queryMock Error messages should print what query we tried + what queries are mocked when the requested query has no mock setup 1`] = `
-"No suitable mock for operation \\"NoMockForThisOne\\" with variables {} found. Please make sure you have mocked the query you are making.
+"Could not find matching mock for operation \\"NoMockForThisOne\\" with variables: {}
+Make sure you have mocked the query you are making.
 
- === Currently mocked queries ===
-\\"SomeOtherQuery\\" with variables: 
+=== All mocked queries ===
+- \\"SomeOtherQuery\\"
 
-  {}, diff: 
-[2mCompared values have no visual difference.[22m"
+"
 `;
