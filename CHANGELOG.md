@@ -1,6 +1,12 @@
 # Changelog
 
+## 0.10.3
+
+- Improved error messages for missing mocks.
+- Variables now match regardless of property order in variable objects.
+
 ## 0.10.2
+
 - Adds a method to clean up `nock`.
 
 ## 0.10.1
