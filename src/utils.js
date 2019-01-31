@@ -1,4 +1,5 @@
 // @flow strict
+import hash from 'object-hash';
 import { DEFAULT_CONFIG } from './defaults';
 import type { MockGraphQLConfig, MockGraphQLRecord } from './index';
 import type { Variables } from './types';
@@ -13,7 +14,7 @@ export function getQueryMockID(
     ignoreThesePropertiesInVariables
   );
 
-  return `${queryName}__${JSON.stringify(processedVariables)}`;
+  return `${queryName}__${hash.sha1(processedVariables)}`;
 }
 
 export function getVariables(

@@ -231,6 +231,72 @@ describe('queryMock', () => {
         expect(res.data).toEqual(mockData);
       });
 
+      it('should match on the variables object no matter the order of the object properties', async () => {
+        queryMock.mockQuery({
+          name: 'TestQuery',
+          variables: {
+            firstParam: [
+              {
+                firstNestedParam: 'firstNestedParam 1',
+                secondNestedParam: 'secondNestedParam 1'
+              },
+              {
+                firstNestedParam: 'firstNestedParam 2',
+                secondNestedParam: 'secondNestedParam 2'
+              }
+            ],
+            secondParam: 'secondParam'
+          },
+          data: mockData
+        });
+
+        const res = await fetchQuery(
+          {
+            text: 'query TestQuery { id }'
+          },
+          {
+            secondParam: 'secondParam',
+            firstParam: [
+              {
+                secondNestedParam: 'secondNestedParam 1',
+                firstNestedParam: 'firstNestedParam 1'
+              },
+              {
+                secondNestedParam: 'secondNestedParam 2',
+                firstNestedParam: 'firstNestedParam 2'
+              }
+            ]
+          }
+        );
+
+        expect(res.data).toEqual(mockData);
+      });
+
+      it('should not match on the provided variables object if arrays are not ordered the same way', async () => {
+        queryMock.mockQuery({
+          name: 'TestQuery',
+          variables: {
+            param: [{ id: 1 }, { id: 2 }]
+          },
+          data: mockData
+        });
+
+        expect.assertions(1);
+
+        try {
+          await fetchQuery(
+            {
+              text: 'query TestQuery { id }'
+            },
+            {
+              param: [{ id: 2 }, { id: 1 }]
+            }
+          );
+        } catch (e) {
+          expect(e).toBeDefined();
+        }
+      });
+
       it('should allow providing properties to ignore when matching', async () => {
         queryMock.mockQuery({
           name: 'TestQuery',
