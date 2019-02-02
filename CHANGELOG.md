@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.11.0
+
+- Drop support for Node < 8.
+
 ## 0.10.3
 
 - Improved error messages for missing mocks.

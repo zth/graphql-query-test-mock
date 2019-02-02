@@ -14,6 +14,8 @@ A few things this library helps with:
 
 ## Installation
 
+You need `node >= 8` in order to use this library.
+
 ```
 # nock is a peer dependency, please install that as well
 yarn add graphql-query-test-mock nock --dev
