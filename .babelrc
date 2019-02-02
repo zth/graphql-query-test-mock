@@ -1,4 +1,11 @@
 {
-  "presets": ["@babel/flow", "@babel/env"],
+  "presets": [
+    "@babel/flow",
+    ["@babel/env", {
+      "targets": {
+        "node": "8"
+      }
+    }]
+  ],
   "plugins": ["@babel/plugin-proposal-class-properties", "@babel/plugin-proposal-object-rest-spread"]
 }
