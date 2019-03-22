@@ -8,7 +8,7 @@ describe('getOperationNameFromQuery', () => {
     );
   });
 
-  it.only('should extract operation name from query and skip fragment names', () => {
+  it('should extract operation name from query and skip fragment names', () => {
     expect(
       getOperationNameFromQuery(
         `fragment SomeFragment on Viewer { id } query SomeQuery { viewer { id, ...SomeFragment } }`
