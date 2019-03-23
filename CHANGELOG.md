@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.11.1
+
+- Fixes bug with operation names not properly picked up when fragments appear before the operation in the query, courtesy of @msimulcik.
+
 ## 0.11.0
 
 - Drop support for Node < 8.
