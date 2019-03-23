@@ -4,7 +4,10 @@ import { parse } from 'graphql/language/parser';
 export function getOperationNameFromQuery(query: string): string {
   try {
     const { definitions } = parse(query);
-    const definition = definitions.length > 0 ? definitions[0] : null;
+    const definition =
+      definitions.length > 0
+        ? definitions.find(({ kind }) => kind === 'OperationDefinition')
+        : null;
 
     const operationName =
       definition && definition.name && definition.name.value
