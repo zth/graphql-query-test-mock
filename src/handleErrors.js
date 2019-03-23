@@ -39,7 +39,8 @@ function getNoMockFoundErrorMessageArray(
     );
     queryMock._queries[operationName].forEach(({ queryMockConfig }) => {
       mockedQueriesMessageArray.push(
-        `Query "variables": ${JSON.stringify(queryMockConfig.variables)}\n` +
+        `Query "variables": ${JSON.stringify(queryMockConfig.variables) ||
+          '-'}\n` +
           `Diff of "variables":\n` +
           `${printDiff(queryMockConfig.variables, variables)}\n\n`
       );
