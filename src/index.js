@@ -3,7 +3,7 @@ import nock from 'nock';
 import url from 'url';
 import { defaultChangeServerResponseFn } from './defaults';
 import { getNockRequestHandlerFn } from './getNockRequestHandlerFn';
-import type { Data, ServerResponse, Variables } from './types';
+import type { Data, ServerResponse, Variables, Error } from './types';
 import { createMockGraphQLRecord, getQueryMockID } from './utils';
 
 export type MockGraphQLConfig = {|
@@ -19,8 +19,17 @@ export type MockGraphQLConfig = {|
   data: Data,
 
   /**
+   * If you need to return GraphQL errors you can return an array of them here. Note that
+   * this is different to the "error" prop below, and this should be used whenever the
+   * GraphQL server would respond with a status 200, but have GraphQL errors.
+   */
+
+  graphqlErrors?: Array<Error>,
+
+  /**
    * If you want, you can return a custom error here that'll be thrown by the API if
-   * you return a status like 401. Read more below.
+   * you return a status like 401. Note that this is *an error for the entire request*,
+   * not GraphQL errors. For returning GraphQL errors, see the "graphqlErrors" prop.
    */
   error?: Data,
 

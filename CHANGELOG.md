@@ -1,5 +1,9 @@
 # Changelog
 
+## master
+
+- Add `graphqlErrors` prop to query mock config, to support returning actual GraphQL errors, and not just server errors.
+
 ## 0.11.1
 
 - Fixes bug with operation names not properly picked up when fragments appear before the operation in the query, courtesy of @msimulcik.

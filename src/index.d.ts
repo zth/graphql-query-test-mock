@@ -1,6 +1,7 @@
 declare module 'graphql-query-test-mock' {
   type Variables = { [key: string]: any };
   type Data = { [key: string]: any };
+  type Error = { [key: string]: any };
 
   type CustomHandlerConfigData = {
     query: string;
@@ -17,6 +18,7 @@ declare module 'graphql-query-test-mock' {
   export type MockGraphQLConfig = {
     name: string;
     data: Data;
+    graphqlErrors?: Array<Error>;
     error?: Data;
     variables?: Variables;
     matchOnVariables?: boolean;

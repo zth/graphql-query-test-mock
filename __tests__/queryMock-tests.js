@@ -509,6 +509,38 @@ describe('queryMock', () => {
         expect(e).toBe(errorData);
       }
     });
+
+    it('should return GraphQL errors if defined', async () => {
+      let data = {
+        editFoo: null
+      };
+
+      let errors = [
+        {
+          message: 'Validation failed: name: Path `foo` is required.',
+          locations: [
+            {
+              line: 7,
+              column: 3
+            }
+          ],
+          path: ['editFoo']
+        }
+      ];
+
+      queryMock.mockQuery({
+        name: 'ErrorTestQuery',
+        data,
+        graphqlErrors: errors
+      });
+
+      const res = await fetchQuery({
+        text: 'query ErrorTestQuery { id }'
+      });
+
+      expect(res.data).toEqual(data);
+      expect(res.errors).toEqual(errors);
+    });
   });
 
   describe('Error messages', () => {

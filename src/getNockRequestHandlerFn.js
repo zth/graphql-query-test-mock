@@ -81,7 +81,8 @@ export function getNockRequestHandlerFn(queryMock: QueryMock): NockHandleFn {
              */
             (async () => {
               const serverResponseData: ServerResponse = {
-                data: queryMockConfig.data
+                data: queryMockConfig.data,
+                errors: queryMockConfig.graphqlErrors
               };
 
               /**
