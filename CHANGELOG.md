@@ -2,6 +2,10 @@
 
 ## master
 
+...
+
+## 0.12.0
+
 - Add `graphqlErrors` prop to query mock config, to support returning actual GraphQL errors, and not just server errors.
 
 ## 0.11.1
