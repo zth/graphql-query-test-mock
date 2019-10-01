@@ -298,5 +298,6 @@ export class QueryMock {
   cleanup() {
     nock.cleanAll();
     nock.enableNetConnect();
+    nock.restore();
   }
 }
