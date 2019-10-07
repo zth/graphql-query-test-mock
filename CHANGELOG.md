@@ -4,6 +4,10 @@
 
 ...
 
+## 0.12.1
+
+- Fix memory leak issue (thanks @msimulcik!).
+
 ## 0.12.0
 
 - Add `graphqlErrors` prop to query mock config, to support returning actual GraphQL errors, and not just server errors.

@@ -1,6 +1,6 @@
 {
   "name": "graphql-query-test-mock",
-  "version": "0.12.0",
+  "version": "0.12.1",
   "author": "Gabriel Nordeborn",
   "license": "MIT",
   "main": "lib/index.js",
