@@ -51,7 +51,7 @@
     "jest": "^23.5.0",
     "lint-staged": "^8.1.1",
     "nock": "^9.6.1",
-    "node-fetch": "^2.2.0",
+    "node-fetch": "^3.1.1",
     "prettier": "^1.16.2",
     "typescript": "3.1.3"
   },
